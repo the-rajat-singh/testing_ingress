@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app
+  name: app2
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app
+      app: app2
   template:
     metadata:
       labels:
-        app: app
+        app: app2
     spec:
       containers:
-      - name: app
+      - name: app2
         image: demorajatacr.azurecr.io/app2:latest  # gets replaced in Actions
         ports:
         - containerPort: 80
@@ -21,11 +21,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: app-service
+  name: app-service2
 spec:
   type: LoadBalancer
   selector:
-    app: app
+    app: app2
   ports:
   - port: 80
     targetPort: 80
