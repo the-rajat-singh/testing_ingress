@@ -15,10 +15,24 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Build and push Docker image
+      - name: Build and push app
         run: |
+          cp app/index.html ./index.html
+          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/app:latest .
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/app:latest
+
+      - name: Build and push app1
+        run: |
+          cp app1/index.html ./index.html
           docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/app1:latest .
           docker push ${{ secrets.ACR_NAME }}.azurecr.io/app1:latest
+
+      - name: Build and push app2
+        run: |
+          cp app2/index.html ./index.html
+          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/app2:latest .
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/app2:latest
+
 
       - name: Set AKS context
         uses: azure/aks-set-context@v3
