@@ -1,50 +1,67 @@
-name: Build and Deploy to AKS
+name: CI/CD to AKS
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+  workflow_dispatch: 
 
 jobs:
-  build-and-deploy:
+  build-deploy:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Login to Azure
-        uses: azure/login@v1
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 1️⃣ Login to Azure
+      - name: Azure Login
+        uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Login to ACR using Azure CLI
-        run: |  
+
+      # 2️⃣ Get ACR credentials
+      - name: Azure CLI - Get ACR credentials
+        run: |
           az acr login --name ${{ secrets.ACR_NAME }}
 
-
-      - name: Build and push app
+      # 3️⃣ Build and Push Docker images for each app
+      - name: Build & Push app images
         run: |
-          cp app/index.html ./index.html
-          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/app:latest .
-          docker push ${{ secrets.ACR_NAME }}.azurecr.io/app:latest
+          apps=("app" "app1" "app2")
+          for app in "${apps[@]}"; do
+            IMAGE=${{ secrets.ACR_NAME }}.azurecr.io/$app:${{ github.run_number }}
+            echo "Building and pushing $IMAGE"
+            docker build -t $IMAGE -f Dockerfile ./$app
+            docker push $IMAGE
+          done
 
-      - name: Build and push app1
-        run: |
-          cp app1/index.html ./index.html
-          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/app1:latest .
-          docker push ${{ secrets.ACR_NAME }}.azurecr.io/app1:latest
-
-      - name: Build and push app2
-        run: |
-          cp app2/index.html ./index.html
-          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/app2:latest .
-          docker push ${{ secrets.ACR_NAME }}.azurecr.io/app2:latest
-
-
-      - name: Set AKS context
+      # 4️⃣ Set AKS Context
+      - name: Set AKS Context
         uses: azure/aks-set-context@v3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
-          resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
+          cluster-name: ${{ secrets.AKS_CLUSTER }}
+          resource-group: ${{ secrets.RESOURCE_GROUP }}
 
-      - name: Deploy to AKS
+      # 5️⃣ Update manifests with new image tags
+      - name: Update manifest images dynamically
         run: |
-          kubectl apply -f manifests/
+          apps=("app" "app1" "app2")
+          for app in "${apps[@]}"; do
+            IMAGE=${{ secrets.ACR_NAME }}.azurecr.io/$app:${{ github.run_number }}
+            sed -i "s|image: .*$|image: $IMAGE|" manifest/${app}-deploy.yaml
+          done
+
+      # 6️⃣ Deploy to AKS
+      - name: Deploy manifests to AKS
+        run: |
+          kubectl apply -f manifest/
+          kubectl rollout status deployment/app
+          kubectl rollout status deployment/app1
+          kubectl rollout status deployment/app2
+
+      # 7️⃣ Verify Services
+      - name: Get Services Info
+        run: kubectl get svc
+
