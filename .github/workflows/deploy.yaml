@@ -22,7 +22,7 @@ jobs:
       - name: Build and push app
         run: |
           cp app/index.html ./index.html
-          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/app:latest .
+          docker build --platform linux/amd64 -t ${{ secrets.ACR_NAME }}.azurecr.io/app:latest .
           docker push ${{ secrets.ACR_NAME }}.azurecr.io/app:latest
 
       - name: Build and push app1
