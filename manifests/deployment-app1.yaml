@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app2
+  name: app1
   labels:
-    app: app2
+    app: app1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app2
+      app: app1
   template:
     metadata:
       labels:
-        app: app2
+        app: app1
     spec:
       containers:
-        - name: app2
-          image: demoacrrajat.azurecr.io/app2:latest
+        - name: app1
+          image: demoacrrajat.azurecr.io/app1:latest
           ports:
             - containerPort: 80
           imagePullPolicy: Always
