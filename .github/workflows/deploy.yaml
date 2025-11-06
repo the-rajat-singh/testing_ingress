@@ -45,7 +45,7 @@ jobs:
           resource-group: ${{ secrets.RESOURCE_GROUP }}
 
       # 5️⃣ Update manifests with new image tags
-      - name: Update manifest images dynamically
+      - name: Update manifests images dynamically
         run: |
           apps=("app" "app1" "app2")
           for app in "${apps[@]}"; do
@@ -56,7 +56,7 @@ jobs:
       # 6️⃣ Deploy to AKS
       - name: Deploy manifests to AKS
         run: |
-          kubectl apply -f manifest/
+          kubectl apply -f manifests/
           kubectl rollout status deployment/app
           kubectl rollout status deployment/app1
           kubectl rollout status deployment/app2
