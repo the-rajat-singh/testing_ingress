@@ -26,14 +26,16 @@ jobs:
           az acr login --name ${{ secrets.ACR_NAME }}
 
       # 3️⃣ Build and Push Docker images for each app
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build & Push app images
         run: |
           apps=("app" "app1" "app2")
           for app in "${apps[@]}"; do
             IMAGE=${{ secrets.ACR_NAME }}.azurecr.io/$app:${{ github.run_number }}
             echo "Building and pushing $IMAGE"
-            docker build -t $IMAGE -f Dockerfile ./$app
-            docker push $IMAGE
+            docker buildx build --platform linux/amd64 -t $IMAGE -f Dockerfile ./$app --push           
           done
 
       # 4️⃣ Set AKS Context
