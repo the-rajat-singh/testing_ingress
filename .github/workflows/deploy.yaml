@@ -50,7 +50,7 @@ jobs:
           apps=("app" "app1" "app2")
           for app in "${apps[@]}"; do
             IMAGE=${{ secrets.ACR_NAME }}.azurecr.io/$app:${{ github.run_number }}
-            sed -i "s|image: .*$|image: $IMAGE|" manifest/${app}-deploy.yaml
+            sed -i "s|image: .*$|image: $IMAGE|" manifests/${app}-deploy.yaml
           done
 
       # 6️⃣ Deploy to AKS
