@@ -14,9 +14,9 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-     - name: Login to ACR using Azure CLI
-       run: |  
-         az acr login --name ${{ secrets.ACR_NAME }}
+      - name: Login to ACR using Azure CLI
+        run: |  
+          az acr login --name ${{ secrets.ACR_NAME }}
 
 
       - name: Build and push app
