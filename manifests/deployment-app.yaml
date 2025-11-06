@@ -14,7 +14,9 @@ spec:
       labels:
         app: nginx
     spec:
-      containers:
-        - name: app
-          image: ${{ secrets.ACR_NAME }}.azurecr.io/app:latest
-   
+     containers:
+     - name: app
+       image: demoacrrajat.azurecr.io/app:latest
+       ports:
+       - containerPort: 80
+
