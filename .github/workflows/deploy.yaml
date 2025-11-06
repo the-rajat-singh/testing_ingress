@@ -35,7 +35,7 @@ jobs:
           for app in "${apps[@]}"; do
             IMAGE=${{ secrets.ACR_NAME }}.azurecr.io/$app:${{ github.run_number }}
             echo "Building and pushing $IMAGE"
-            docker buildx build --platform linux/amd64 -t $IMAGE -f Dockerfile ./$app --push           
+            docker buildx build --platform linux/arm64 -t $IMAGE -f Dockerfile ./$app --push           
           done
 
       # 4️⃣ Set AKS Context
