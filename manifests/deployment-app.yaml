@@ -17,5 +17,4 @@ spec:
       containers:
         - name: app
           image: ${{ secrets.ACR_NAME }}.azurecr.io/app:latest
-      ports:
-        containerPort: 80
+   
