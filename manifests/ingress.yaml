@@ -1,1 +1,38 @@
-
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: multiapp-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - churu.online
+    secretName: rajatdevops-tls
+  rules:
+  - host: churu.online
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app-service
+            port:
+              number: 80
+      - path: /app1
+        pathType: Prefix
+        backend:
+          service:
+            name: app-service1
+            port:
+              number: 80
+      - path: /app2
+        pathType: Prefix
+        backend:
+          service:
+            name: app-service2
+            port:
+              number: 80
