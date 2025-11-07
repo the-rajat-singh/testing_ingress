@@ -14,8 +14,7 @@ spec:
     spec:
       containers:
       - name: app1
-        image: demorajatacr.azurecr.io/app1:latest  # gets replaced in Actions
-        ports:
+        image: demorajatacr.azurecr.io/app1:latest  
         - containerPort: 80
 ---
 apiVersion: v1
