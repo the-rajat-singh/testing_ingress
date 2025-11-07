@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: app
-        image: demorajatacr.azurecr.io/app:latest 
+        image: demorajatacr.azurecr.io/app:v40
         ports:
         - containerPort: 80
 ---
