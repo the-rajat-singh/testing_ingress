@@ -14,18 +14,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 1️⃣ Login to Azure
+     
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # 2️⃣ Get ACR credentials
-      - name: Azure CLI - Get ACR credentials
+    
+      - name: Azure CLI acr
         run: |
           az acr login --name ${{ secrets.ACR_NAME }}
 
-      # 3️⃣ Build and Push Docker images for each app
+      
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -38,7 +38,7 @@ jobs:
             docker buildx build --platform linux/arm64 -t $IMAGE -f Dockerfile ./$app --push           
           done
 
-      # 4️⃣ Set AKS Context
+
       - name: Set AKS Context
         uses: azure/aks-set-context@v3
         with:
@@ -46,7 +46,7 @@ jobs:
           cluster-name: ${{ secrets.AKS_CLUSTER }}
           resource-group: ${{ secrets.RESOURCE_GROUP }}
 
-      # 5️⃣ Update manifests with new image tags
+   
       - name: Update manifests images dynamically
         run: |
           apps=("app" "app1" "app2")
@@ -55,7 +55,7 @@ jobs:
             sed -i "s|image: .*$|image: $IMAGE|" manifests/${app}-deploy.yaml
           done
 
-      # 6️⃣ Deploy to AKS
+      
       - name: Deploy manifests to AKS
         run: |
           kubectl apply -f manifests/
@@ -63,7 +63,7 @@ jobs:
           kubectl rollout status deployment/app1
           kubectl rollout status deployment/app2
 
-      # 7️⃣ Verify Services
+     
       - name: Get Services Info
         run: kubectl get svc
 
